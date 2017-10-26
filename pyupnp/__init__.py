@@ -4,6 +4,7 @@ from async_timeout import timeout
 import re
 import aiohttp
 import xmltodict
+from urllib.parse import urljoin
 
 
 def utcnow():
@@ -13,9 +14,58 @@ def utcnow():
 LISTEN_PORT = 65507
 
 
+class Service(object):
+    def __init__(self, base_url, data):
+        self.base_url = base_url
+        self.data = data
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+    def __str__(self):
+        return self.data.__str__()
+
+    def __repr__(self):
+        return self.data.__repr__()
+
+    def build_request(self, func, urn, params):
+        params['@xmlns:u'] = urn
+        envelop = {'s:Envelope': {
+            '@xmlns:s': 'http://schemas.xmlsoap.org/soap/envelope/',
+            '@s:encodingStyle': 'http://schemas.xmlsoap.org/soap/encoding/',
+            's:Body': {func: params}}}
+        return xmltodict.unparse(envelop)
+
+    async def request(self, func, urn, params):
+        data = self.build_request(func, urn, params)
+        headers = {'SOAPAction': '"{urn}:{func}"'.format(urn=urn, func=func),
+                   'Content-Type': 'text/xml',}
+        async with aiohttp.ClientSession() as session:
+            async with session.post(self.url, data=data, headers=headers) as resp:
+                print(resp.status)
+                print(await resp.text())
+
+    @property
+    def url(self):
+        return urljoin(self.base_url, self['controlURL'])
+
+
 class DeviceDescription(object):
     def __init__(self, data):
         self.data = xmltodict.parse(data)
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+    def __str__(self):
+        return self.data.__str__()
+
+    def __repr__(self):
+        return self.data.__repr__()
+
+    @property
+    def url_base(self):
+        return self['root']['URLBase']
 
     def filter_service(self, stype):
         def _filter(device, stype):
@@ -23,12 +73,14 @@ class DeviceDescription(object):
             if slist:
                 slist = slist.get('service')
                 slist = slist if isinstance(slist, list) else [slist]
-                for service in slist:
-                    if service.get('serviceType') == stype:
-                        yield service
+                for s in slist:
+                    if s.get('serviceType') == stype:
+                        yield Service(self.url_base, s)
             dlist = device.get('deviceList')
             if dlist:
-                for d in dlist.values():
+                dlist = dlist.get('device')
+                dlist = dlist if isinstance(dlist, list) else [dlist]
+                for d in dlist:
                     for s in _filter(d, stype):
                         yield s
         return _filter(self.data['root']['device'], stype)
