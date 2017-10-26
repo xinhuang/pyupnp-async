@@ -88,8 +88,8 @@ class DeviceDescription(object):
 
 class MSResponse(object):
     def __init__(self, addr, msg):
-        self.ip = addr[0]
-        self.port = addr[1]
+        self.src_ip = addr[0]
+        self.src_port = addr[1]
         data = dict(re.findall(r'(?P<name>.*?): (?P<value>.*?)\r\n', msg))
         self.st = data['ST']
         self.usn = data['USN']

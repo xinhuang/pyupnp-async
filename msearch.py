@@ -8,14 +8,14 @@ arguments = {
     'NewExternalPort': '35000',           # specify port on router
     'NewProtocol': 'TCP',                 # specify protocol
     'NewInternalPort': '35000',           # specify port on internal host
-    'NewInternalClient': '192.168.1.7', # specify IP of internal host
+    'NewInternalClient': '192.168.1.7',   # specify IP of internal host
     'NewEnabled': '1',                    # turn mapping ON
     'NewPortMappingDescription': 'Test desc', # add a description
     'NewLeaseDuration': '0',}              # how long should it be opened?
 
 async def f():
     async for resp in pyupnp.msearch(search_target='urn:schemas-upnp-org:device:InternetGatewayDevice:1'):
-        print(resp.ip, resp.port)
+        print('source', resp.src_ip, resp.src_port)
         print(resp.server, resp.st)
         print(resp.location)
         desc = await resp.get_description()
