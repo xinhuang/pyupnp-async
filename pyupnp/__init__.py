@@ -1,6 +1,9 @@
 import asyncio
 from datetime import datetime
 from async_timeout import timeout
+import re
+import aiohttp
+import xmltodict
 
 
 def utcnow():
@@ -8,6 +11,51 @@ def utcnow():
 
 
 LISTEN_PORT = 65507
+
+
+class DeviceDescription(object):
+    def __init__(self, data):
+        self.data = xmltodict.parse(data)
+
+    def filter_service(self, stype):
+        def _filter(device, stype):
+            slist = device.get('serviceList')
+            if slist:
+                slist = slist.get('service')
+                slist = slist if isinstance(slist, list) else [slist]
+                for service in slist:
+                    if service.get('serviceType') == stype:
+                        yield service
+            dlist = device.get('deviceList')
+            if dlist:
+                for d in dlist.values():
+                    for s in _filter(d, stype):
+                        yield s
+        return _filter(self.data['root']['device'], stype)
+
+
+class MSResponse(object):
+    def __init__(self, addr, msg):
+        self.ip = addr[0]
+        self.port = addr[1]
+        data = dict(re.findall(r'(?P<name>.*?): (?P<value>.*?)\r\n', msg))
+        self.st = data['ST']
+        self.usn = data['USN']
+        self.server = data['SERVER']
+        self.location = data['LOCATION']
+        self.date = data.get('DATE')
+        self.cache_control = data.get('CACHE-CONTROL')
+        self.description = None
+
+    async def get_description(self):
+        assert self.location
+
+        if self.description is None:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(self.location) as resp:
+                    self.description = DeviceDescription(await resp.text())
+
+        return self.description
 
 
 async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None):
@@ -34,7 +82,7 @@ async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None):
             self.start_time = utcnow()
 
         def datagram_received(self, data, addr):
-            self.responses.put_nowait((data, addr))
+            self.responses.put_nowait(MSResponse(addr, data.decode()))
 
         def error_received(self, exc):
             print('error received:', exc)
@@ -58,11 +106,10 @@ async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None):
     loop = loop or asyncio.get_event_loop()
 
     cp = MSearchClientProtocol(search_target, max_wait, loop)
-    co = loop.create_datagram_endpoint(
+    await loop.create_datagram_endpoint(
         lambda: cp, local_addr=('0.0.0.0', LISTEN_PORT))
-    await co
-    print('established')
     assert cp.start_time
+
     try:
         async with timeout(cp.remaining, loop=loop):
             while not cp.timeout():
