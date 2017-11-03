@@ -40,7 +40,8 @@ class Service(object):
             's:Body': {'u:' + func: params}}}
         return xmltodict.unparse(envelop).replace(' encoding="utf-8"', '')
 
-    async def request(self, func, urn, params):
+    async def request(self, func, params):
+        urn = self['serviceType']
         data = self.build_request(func, urn, params)
         headers = {'soapaction': '"{urn}#{func}"'.format(urn=urn, func=func),
                    'Content-Type': 'text/xml; charset="utf-8"',}

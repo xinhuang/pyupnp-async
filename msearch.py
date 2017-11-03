@@ -26,11 +26,13 @@ del_args = {
 WANIP_CONNECTION = 'urn:schemas-upnp-org:service:WANIPConnection:1'
 WANPPP_CONNECTION = 'urn:schemas-upnp-org:service:WANPPPConnection:1'
 
+DEVICE = 'urn:schemas-upnp-org:device:InternetGatewayDevice:1'
+
 SNAME = WANIP_CONNECTION
 
 async def f():
     service = None
-    async for resp in pyupnp.msearch(search_target='urn:schemas-upnp-org:device:InternetGatewayDevice:1'):
+    async for resp in pyupnp.msearch(search_target=DEVICE):
         print('device', resp.src_ip, resp.src_port)
         print(resp.server, resp.st)
         print(resp.location)
@@ -42,11 +44,11 @@ async def f():
     pprint(service)
     pprint(service.url)
     print('adding port mapping...')
-    await service.request('AddPortMapping', SNAME, add_args)
+    await service.request('AddPortMapping', add_args)
     print('done')
     await asyncio.sleep(3)
     print('deleting port mapping...')
-    await service.request('DeletePortMapping', SNAME, del_args)
+    await service.request('DeletePortMapping', del_args)
     print('done')
 
 
