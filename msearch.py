@@ -36,9 +36,8 @@ async def f():
         print('device', resp.src_ip, resp.src_port)
         print(resp.server, resp.st)
         print(resp.location)
-        desc = await resp.get_description()
-        port_mapping_service = None
-        for s in desc.filter_service(SNAME):
+        device = await resp.get_device()
+        for s in dev.filter_service(SNAME):
             service = s
             break
     pprint(service)

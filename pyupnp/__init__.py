@@ -57,7 +57,7 @@ class Service(object):
         return urljoin(self.base_url, self['controlURL'])
 
 
-class DeviceDescription(object):
+class Device(object):
     def __init__(self, data):
         self.data = xmltodict.parse(data)
 
@@ -106,13 +106,13 @@ class MSResponse(object):
         self.cache_control = data.get('CACHE-CONTROL')
         self.description = None
 
-    async def get_description(self):
+    async def get_device(self):
         assert self.location
 
         if self.description is None:
             async with aiohttp.ClientSession() as session:
                 async with session.get(self.location) as resp:
-                    self.description = DeviceDescription(await resp.text())
+                    self.device = Device(await resp.text())
 
         return self.description
 
