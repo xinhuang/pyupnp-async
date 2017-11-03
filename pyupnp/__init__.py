@@ -14,6 +14,10 @@ def utcnow():
 LISTEN_PORT = 65507
 
 
+class UpnpSoapError(Exception):
+    pass
+
+
 class Service(object):
     def __init__(self, base_url, data):
         self.base_url = base_url
@@ -33,17 +37,19 @@ class Service(object):
         envelop = {'s:Envelope': {
             '@xmlns:s': 'http://schemas.xmlsoap.org/soap/envelope/',
             '@s:encodingStyle': 'http://schemas.xmlsoap.org/soap/encoding/',
-            's:Body': {func: params}}}
-        return xmltodict.unparse(envelop)
+            's:Body': {'u:' + func: params}}}
+        return xmltodict.unparse(envelop).replace(' encoding="utf-8"', '')
 
     async def request(self, func, urn, params):
         data = self.build_request(func, urn, params)
-        headers = {'SOAPAction': '"{urn}:{func}"'.format(urn=urn, func=func),
-                   'Content-Type': 'text/xml',}
+        headers = {'soapaction': '"{urn}#{func}"'.format(urn=urn, func=func),
+                   'Content-Type': 'text/xml; charset="utf-8"',}
         async with aiohttp.ClientSession() as session:
             async with session.post(self.url, data=data, headers=headers) as resp:
-                print(resp.status)
-                print(await resp.text())
+                if resp.status == 200:
+                    pass
+                else:
+                    raise UpnpSoapError(await resp.text())
 
     @property
     def url(self):
