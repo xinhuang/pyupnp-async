@@ -37,7 +37,7 @@ async def f():
         print(resp.server, resp.st)
         print(resp.location)
         device = await resp.get_device()
-        for s in dev.filter_service(SNAME):
+        for s in device.filter_service(SNAME):
             service = s
             break
     pprint(service)

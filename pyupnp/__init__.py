@@ -6,16 +6,14 @@ import aiohttp
 import xmltodict
 from urllib.parse import urljoin
 
+from .upnp import UpnpSoapError
+
 
 def utcnow():
     return datetime.utcnow().timestamp()
 
 
 LISTEN_PORT = 65507
-
-
-class UpnpSoapError(Exception):
-    pass
 
 
 class Service(object):
@@ -104,17 +102,17 @@ class MSResponse(object):
         self.location = data['LOCATION']
         self.date = data.get('DATE')
         self.cache_control = data.get('CACHE-CONTROL')
-        self.description = None
+        self.device = None
 
     async def get_device(self):
         assert self.location
 
-        if self.description is None:
+        if self.device is None:
             async with aiohttp.ClientSession() as session:
                 async with session.get(self.location) as resp:
                     self.device = Device(await resp.text())
 
-        return self.description
+        return self.device
 
 
 async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None):
