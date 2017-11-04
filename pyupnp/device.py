@@ -1,4 +1,4 @@
-from .service import Service
+from .service import create_service
 
 import xmltodict
 
@@ -33,7 +33,7 @@ class Device(object):
                 slist = slist.get('service')
                 slist = slist if isinstance(slist, list) else [slist]
                 for s in slist:
-                    r.append(Service(self.url_base, s))
+                    r.append(create_service(self.url_base, s))
             dlist = device.get('deviceList')
             if dlist:
                 dlist = dlist.get('device')

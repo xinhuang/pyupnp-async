@@ -1,11 +1,11 @@
-from .error import UpnpSoapError
+from ..error import UpnpSoapError
 
-import aiohttp
 import xmltodict
+import aiohttp
 from urllib.parse import urljoin
 
 
-class Service(object):
+class BaseService(object):
     def __init__(self, base_url, data):
         self.base_url = base_url
         self.data = data
@@ -42,3 +42,6 @@ class Service(object):
     @property
     def url(self):
         return urljoin(self.base_url, self['controlURL'])
+
+
+

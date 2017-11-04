@@ -43,14 +43,15 @@ async def f():
     pprint(service)
     pprint(service.url)
     print('getting external ip address...')
-    r = await service.request('GetExternalIPAddress')
+    r = await service.get_external_ip_address()
     print(r)
     print('adding port mapping...')
-    await service.request('AddPortMapping', add_args)
+    r = await service.add_port_mapping(PORT, PORT, '192.168.1.7', PROTOCOL)
+    print(r)
     print('done')
     await asyncio.sleep(3)
     print('deleting port mapping...')
-    await service.request('DeletePortMapping', del_args)
+    await service.delete_port_mapping(PORT, PROTOCOL)
     print('done')
 
 
