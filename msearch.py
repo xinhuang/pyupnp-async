@@ -42,6 +42,9 @@ async def f():
             break
     pprint(service)
     pprint(service.url)
+    print('getting external ip address...')
+    r = await service.request('GetExternalIPAddress', {})
+    print(r)
     print('adding port mapping...')
     await service.request('AddPortMapping', add_args)
     print('done')
