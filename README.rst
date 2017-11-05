@@ -1,6 +1,6 @@
-******
-pyupnp
-******
+************
+pyupnp-async
+************
 
 A Python library for UPnP operations using asyncio.
 
@@ -10,19 +10,19 @@ possible, but manual construction of request parameters is needed. (I.E. the SOU
 Installation
 ============
 
-To install the latest release on `PyPi <https://pypi.python.org/pypi/pyupnp>`_,
+To install the latest release on `PyPi <https://pypi.python.org/pypi/pyupnp-async>`_,
 simply run:
 
 ::
 
-  pip install pyupnp
+  pip install pyupnp-async
 
 Or to install the latest development version, run:
 
 ::
 
-  git clone https://github.com/xinhuang/pyupnp.git
-  cd pyupnp
+  git clone https://github.com/xinhuang/pyupnp-async.git
+  cd pyupnp-async
   python setup.py install
 
 Quick Tutorial
@@ -32,7 +32,7 @@ Create a port forwarding using UPnP:
 
 .. code:: python
 
-  >>> from pyupnp import msearch_first
+  >>> from pyupnp_async import msearch_first
   >>>
   >>> async def forward_port(local_ip, local_port, ext_port, protocol):
   >>>     resp = await msearch_first('urn:schemas-upnp-org:device:InternetGatewayDevice:1')
@@ -49,7 +49,7 @@ Delete a port forwarding using UPnP:
 
 .. code:: python
 
-  >>> from pyupnp import msearch_first
+  >>> from pyupnp_async import msearch_first
   >>>
   >>> async def stop_forwarding(ext_port, protocol):
   >>>     resp = await msearch_first('urn:schemas-upnp-org:device:InternetGatewayDevice:1')
