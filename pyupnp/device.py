@@ -44,11 +44,11 @@ class Device(object):
         self._services = list_service(self.data['root']['device'])
         return self._services
 
-    def filter_service(self, stype):
+    def find_service(self, stype):
         services = self.services
         for s in services:
             if s['serviceType'] == stype:
                 yield s
 
     def find_first_service(self, stype):
-        return next(self.filter_service(stype))
+        return next(self.find_service(stype))
