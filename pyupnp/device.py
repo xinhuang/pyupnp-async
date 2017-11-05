@@ -49,3 +49,6 @@ class Device(object):
         for s in services:
             if s['serviceType'] == stype:
                 yield s
+
+    def find_first_service(self, stype):
+        return next(self.filter_service(stype))

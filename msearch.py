@@ -32,14 +32,12 @@ SNAME = WANIP_CONNECTION
 
 async def f():
     service = None
-    async for resp in pyupnp.msearch(search_target=DEVICE):
-        print('device', resp.src_ip, resp.src_port)
-        print(resp.server, resp.st)
-        print(resp.location)
-        device = await resp.get_device()
-        for s in device.filter_service(SNAME):
-            service = s
-            break
+    resp = await pyupnp.msearch_first(search_target=DEVICE)
+    print('device', resp.src_ip, resp.src_port)
+    print(resp.server, resp.st)
+    print(resp.location)
+    device = await resp.get_device()
+    service = device.find_first_service(SNAME)
     pprint(service)
     pprint(service.url)
     print('getting external ip address...')
