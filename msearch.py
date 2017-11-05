@@ -1,5 +1,5 @@
 import asyncio
-import pyupnp
+import pyupnp_async
 from pprint import pprint
 
 loop = asyncio.get_event_loop()
@@ -32,7 +32,7 @@ SNAME = WANIP_CONNECTION
 
 async def f():
     service = None
-    resp = await pyupnp.msearch_first(search_target=DEVICE)
+    resp = await pyupnp_async.msearch_first(search_target=DEVICE)
     print('device', resp.src_ip, resp.src_port)
     print(resp.server, resp.st)
     print(resp.location)

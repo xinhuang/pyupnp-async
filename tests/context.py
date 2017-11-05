@@ -4,5 +4,5 @@ import os
 
 sys.path.insert(0, path.abspath(path.join(path.dirname(__file__), '..')))
 
-from pyupnp import *
+from pyupnp_async import *
 
