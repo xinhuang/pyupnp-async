@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.rst") as readme_file:
     readme_string = readme_file.read()
@@ -10,7 +10,7 @@ setup(
     author="Xin Huang",
     author_email="xinhuang.abc@gmail.com",
     url="https://github.com/xinhuang/pyupnp-async",
-    packages=['pyupnp_async', 'tests'],
+    packages=find_packages(),
     license="License :: OSI Approved :: MIT License",
     long_description=readme_string,
     install_requires=[
