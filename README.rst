@@ -27,35 +27,35 @@ Create a port forwarding using UPnP:
 
 .. code:: python
 
-  >>> from pyupnp_async import msearch_first
-  >>>
-  >>> async def forward_port(local_ip, local_port, ext_port, protocol):
-  >>>     resp = await msearch_first('urn:schemas-upnp-org:device:InternetGatewayDevice:1')
-  >>>     device = await resp.get_device()
-  >>>     service = device.find_first_service('urn:schemas-upnp-org:service:WANIPConnection:1')
-  >>>     ext_ip = await service.get_external_ip_address()
-  >>>     try:
-  >>>         await service.add_port_mapping(local_port, ext_port, local_ip, protocol)
-  >>>         print('Data to external Port {} will be forwarded to {}:{}'.format(ext_port, local_ip, local_port))
-  >>>     except UpnpSoapError as e:
-  >>>         print(e)
+  from pyupnp_async import msearch_first
+  
+  async def forward_port(local_ip, local_port, ext_port, protocol):
+      resp = await msearch_first('urn:schemas-upnp-org:device:InternetGatewayDevice:1')
+      device = await resp.get_device()
+      service = device.find_first_service('urn:schemas-upnp-org:service:WANIPConnection:1')
+      ext_ip = await service.get_external_ip_address()
+      try:
+          await service.add_port_mapping(local_port, ext_port, local_ip, protocol)
+          print('Data to external Port {} will be forwarded to {}:{}'.format(ext_port, local_ip, local_port))
+      except UpnpSoapError as e:
+          print(e)
 
 Delete a port forwarding using UPnP:
 
 .. code:: python
 
-  >>> from pyupnp_async import msearch_first
-  >>>
-  >>> async def stop_forwarding(ext_port, protocol):
-  >>>     resp = await msearch_first('urn:schemas-upnp-org:device:InternetGatewayDevice:1')
-  >>>     device = await resp.get_device()
-  >>>     service = device.find_first_service('urn:schemas-upnp-org:service:WANIPConnection:1')
-  >>>     ext_ip = await service.get_external_ip_address()
-  >>>     try:
-  >>>         await service.delete_port_mapping(ext_port, protocol)
-  >>>         print('Data to external Port {} will not be forwarded any more.')
-  >>>     except UpnpSoapError as e:
-  >>>         print(e)
+  from pyupnp_async import msearch_first
+  
+  async def stop_forwarding(ext_port, protocol):
+      resp = await msearch_first('urn:schemas-upnp-org:device:InternetGatewayDevice:1')
+      device = await resp.get_device()
+      service = device.find_first_service('urn:schemas-upnp-org:service:WANIPConnection:1')
+      ext_ip = await service.get_external_ip_address()
+      try:
+          await service.delete_port_mapping(ext_port, protocol)
+          print('Data to external Port {} will not be forwarded any more.')
+      except UpnpSoapError as e:
+          print(e)
 
 API Reference
 =============
