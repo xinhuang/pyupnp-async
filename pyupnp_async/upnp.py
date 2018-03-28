@@ -34,7 +34,7 @@ class MSResponse(object):
         if self.device is None:
             async with aiohttp.ClientSession() as session:
                 async with session.get(self.location) as resp:
-                    self.device = Device(await resp.text())
+                    self.device = Device(await resp.text(), self.location)
 
         return self.device
 
