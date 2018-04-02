@@ -39,7 +39,7 @@ class MSResponse(object):
         return self.device
 
 
-async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None):
+async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None, first_only=True):
     class MSearchClientProtocol(object):
         def __init__(self, search_target, max_wait, loop):
             self.transport = None
@@ -92,11 +92,13 @@ async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None):
     assert cp.start_time
 
     try:
+        resp = []
         async with timeout(cp.remaining, loop=loop):
             while not cp.timeout():
-                yield await cp.responses.get()
+                resp.append(await cp.responses.get())
                 if first_only:
-                    break
+                    return resp
+        return resp
     except asyncio.TimeoutError:
         pass
     except Exception as e:
@@ -107,5 +109,6 @@ async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None):
 
 
 async def msearch_first(search_target='upnp:rootdevice', max_wait=2, loop=None):
-    async for resp in msearch(search_target, max_wait, loop):
-        return resp
+    resp = await msearch(search_target, max_wait, loop, first_only=True)
+    if len(resp):
+        return resp[0]
