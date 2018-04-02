@@ -1,5 +1,6 @@
 from .factory import service
 from .base_service import BaseService
+from ..const import LIBRARY_NAME
 
 import xmltodict
 
@@ -12,7 +13,7 @@ class WANIPConnectionService(BaseService):
         return data['s:Envelope']['s:Body']['u:GetExternalIPAddressResponse']['NewExternalIPAddress']
 
     async def add_port_mapping(self, int_port, ext_port, local_ip, protocol,
-                               remote='', enabled=True, lease=0, desc=''):
+                               remote='', enabled=True, lease=0, desc=LIBRARY_NAME):
         args = {
             'NewRemoteHost': remote,
             'NewExternalPort': ext_port,

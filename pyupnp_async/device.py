@@ -4,9 +4,10 @@ import xmltodict
 
 
 class Device(object):
-    def __init__(self, data):
+    def __init__(self, data, location=None):
         self.data = xmltodict.parse(data)
         self._services = None
+        self._base_url = location[:location.rfind('/')]
 
     def __getitem__(self, key):
         return self.data[key]
@@ -19,7 +20,9 @@ class Device(object):
 
     @property
     def url_base(self):
-        return self['root']['URLBase']
+        if 'URLBase' in self['root']:
+            return self['root']['URLBase']
+        return self._base_url
 
     @property
     def services(self):
