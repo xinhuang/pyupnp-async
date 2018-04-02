@@ -39,7 +39,7 @@ class MSResponse(object):
         return self.device
 
 
-async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None, first_only=True):
+async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None, first_only=False):
     class MSearchClientProtocol(object):
         def __init__(self, search_target, max_wait, loop):
             self.transport = None
