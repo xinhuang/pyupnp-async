@@ -6,9 +6,11 @@ from async_timeout import timeout
 import re
 import aiohttp
 import xmltodict
+import logging
 
 LISTEN_PORT = 65507
 
+logger = logging.getLogger(__name__)
 
 
 def utcnow():
@@ -66,17 +68,20 @@ async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None, first_
             self.responses.put_nowait(MSResponse(addr, data.decode()))
 
         def error_received(self, exc):
-            print('error received:', exc)
+            logger.error('error received: %s', exc)
 
         def connection_lost(self, exc):
             if exc:
-                print('connection lost:', exc)
+                logger.error('connection lost: %s', exc)
 
         def close(self):
             self.transport.close()
 
         def timeout(self):
             return self.remaining <= 0
+
+        def cancel(self):
+            self.max_wait = 0
 
         @property
         def remaining(self):
@@ -91,21 +96,21 @@ async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None, first_
         lambda: cp, local_addr=('0.0.0.0', LISTEN_PORT))
     assert cp.start_time
 
+    resp = []
     try:
-        resp = []
         async with timeout(cp.remaining, loop=loop):
             while not cp.timeout():
                 resp.append(await cp.responses.get())
                 if first_only:
-                    return resp
-        return resp
+                    cp.cancel()
     except asyncio.TimeoutError:
         pass
     except Exception as e:
-        print(e)
+        logger.error(e)
     finally:
         assert cp.timeout
         cp.close()
+        return resp
 
 
 async def msearch_first(search_target='upnp:rootdevice', max_wait=2, loop=None):
