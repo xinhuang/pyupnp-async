@@ -6,9 +6,11 @@ from async_timeout import timeout
 import re
 import aiohttp
 import xmltodict
+import logging
 
 LISTEN_PORT = 65507
 
+logger = logging.getLogger(__name__)
 
 
 def utcnow():
@@ -39,7 +41,7 @@ class MSResponse(object):
         return self.device
 
 
-async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None):
+async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None, first_only=False):
     class MSearchClientProtocol(object):
         def __init__(self, search_target, max_wait, loop):
             self.transport = None
@@ -66,17 +68,20 @@ async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None):
             self.responses.put_nowait(MSResponse(addr, data.decode()))
 
         def error_received(self, exc):
-            print('error received:', exc)
+            logger.error('error received: %s', exc)
 
         def connection_lost(self, exc):
             if exc:
-                print('connection lost:', exc)
+                logger.error('connection lost: %s', exc)
 
         def close(self):
             self.transport.close()
 
         def timeout(self):
             return self.remaining <= 0
+
+        def cancel(self):
+            self.max_wait = 0
 
         @property
         def remaining(self):
@@ -91,21 +96,24 @@ async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None):
         lambda: cp, local_addr=('0.0.0.0', LISTEN_PORT))
     assert cp.start_time
 
+    resp = []
     try:
         async with timeout(cp.remaining, loop=loop):
             while not cp.timeout():
-                yield await cp.responses.get()
+                resp.append(await cp.responses.get())
                 if first_only:
-                    break
+                    cp.cancel()
     except asyncio.TimeoutError:
         pass
     except Exception as e:
-        print(e)
+        logger.error(e)
     finally:
         assert cp.timeout
         cp.close()
+        return resp
 
 
 async def msearch_first(search_target='upnp:rootdevice', max_wait=2, loop=None):
-    async for resp in msearch(search_target, max_wait, loop):
-        return resp
+    resp = await msearch(search_target, max_wait, loop, first_only=True)
+    if len(resp):
+        return resp[0]
