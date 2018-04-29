@@ -21,12 +21,12 @@ class MSResponse(object):
     def __init__(self, addr, msg):
         self.src_ip = addr[0]
         self.src_port = addr[1]
-        logger.debug(msg)
+        logger.debug("MSResponse msg: %s", msg)
         data = dict(re.findall(r'(?P<name>.*?): (?P<value>.*?)\r\n', msg))
         self.st = data['ST']
         self.usn = data['USN']
-        self.server = data['SERVER']
         self.location = data['LOCATION']
+        self.server = data.get('SERVER')
         self.date = data.get('DATE')
         self.cache_control = data.get('CACHE-CONTROL')
         self.device = None
