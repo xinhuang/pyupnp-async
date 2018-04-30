@@ -21,7 +21,10 @@ class MSResponse(object):
     def __init__(self, addr, msg):
         self.src_ip = addr[0]
         self.src_port = addr[1]
-        data = dict(re.findall(r'(?P<name>.*?): (?P<value>.*?)\r\n', msg))
+        logger.debug("MSResponse msg: %s", msg)
+
+        data = dict([(k.upper(), v) for (k,v) in re.findall(r'(?P<name>.*?): (?P<value>.*?)\r\n', msg)])
+
         self.st = data['ST']
         self.usn = data['USN']
         self.server = data['SERVER']

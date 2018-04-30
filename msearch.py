@@ -1,6 +1,8 @@
 import asyncio
 import pyupnp_async
 from pprint import pprint
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 loop = asyncio.get_event_loop()
 
