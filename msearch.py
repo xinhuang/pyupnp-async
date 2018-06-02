@@ -32,6 +32,7 @@ WANCOMMON_INTERFACE_CONFIG = 'urn:schemas-upnp-org:service:WANCommonInterfaceCon
 DEVICE = 'urn:schemas-upnp-org:device:InternetGatewayDevice:1'
 
 SNAME = WANIP_CONNECTION
+SNAME = WANPPP_CONNECTION
 
 async def f():
     service = None
