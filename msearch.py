@@ -26,6 +26,7 @@ del_args = {
 
 
 WANIP_CONNECTION = 'urn:schemas-upnp-org:service:WANIPConnection:1'
+WANIP_CONNECTION2 = 'urn:schemas-upnp-org:service:WANIPConnection:2'
 WANPPP_CONNECTION = 'urn:schemas-upnp-org:service:WANPPPConnection:1'
 WANCOMMON_INTERFACE_CONFIG = 'urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1'
 
@@ -33,6 +34,7 @@ DEVICE = 'urn:schemas-upnp-org:device:InternetGatewayDevice:1'
 
 SNAME = WANPPP_CONNECTION
 SNAME = WANIP_CONNECTION
+SNAME = WANIP_CONNECTION2
 
 async def f():
     service = None
