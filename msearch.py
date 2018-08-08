@@ -31,8 +31,8 @@ WANCOMMON_INTERFACE_CONFIG = 'urn:schemas-upnp-org:service:WANCommonInterfaceCon
 
 DEVICE = 'urn:schemas-upnp-org:device:InternetGatewayDevice:1'
 
-SNAME = WANIP_CONNECTION
 SNAME = WANPPP_CONNECTION
+SNAME = WANIP_CONNECTION
 
 async def f():
     service = None
@@ -41,6 +41,7 @@ async def f():
     print(resp.server, resp.st)
     print(resp.location)
     device = await resp.get_device()
+    print(device.__dict__)
     service = device.find_first_service(SNAME)
     pprint(service)
     pprint(service.url)
