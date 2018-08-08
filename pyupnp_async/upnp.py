@@ -96,7 +96,7 @@ async def msearch(search_target='upnp:rootdevice', max_wait=2, loop=None, first_
 
     cp = MSearchClientProtocol(search_target, max_wait, loop)
     await loop.create_datagram_endpoint(
-        lambda: cp, local_addr=('0.0.0.0', LISTEN_PORT))
+        lambda: cp, local_addr=('0.0.0.0', LISTEN_PORT), reuse_port=True)
     assert cp.start_time
 
     resp = []
