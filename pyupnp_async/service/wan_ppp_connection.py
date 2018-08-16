@@ -5,9 +5,8 @@ from ..const import LIBRARY_NAME
 import xmltodict
 
 
-@service('urn:schemas-upnp-org:service:WANIPConnection:1')
-@service('urn:schemas-upnp-org:service:WANIPConnection:2')
-class WANIPConnectionService(BaseService):
+@service('urn:schemas-upnp-org:service:WANPPPConnection:1')
+class WANPPPConnectionService(BaseService):
     async def get_external_ip_address(self):
         xml = await self.request('GetExternalIPAddress')
         data = xmltodict.parse(xml)
@@ -33,4 +32,3 @@ class WANIPConnectionService(BaseService):
             'NewProtocol': protocol, }
 
         return await self.request('DeletePortMapping', args)
-

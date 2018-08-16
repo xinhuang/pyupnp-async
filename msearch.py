@@ -26,21 +26,38 @@ del_args = {
 
 
 WANIP_CONNECTION = 'urn:schemas-upnp-org:service:WANIPConnection:1'
+WANIP_CONNECTION2 = 'urn:schemas-upnp-org:service:WANIPConnection:2'
 WANPPP_CONNECTION = 'urn:schemas-upnp-org:service:WANPPPConnection:1'
 WANCOMMON_INTERFACE_CONFIG = 'urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1'
 
-DEVICE = 'urn:schemas-upnp-org:device:InternetGatewayDevice:1'
+SUPPORTED_DEVICES = ['urn:schemas-upnp-org:device:InternetGatewayDevice:2', 'urn:schemas-upnp-org:device:InternetGatewayDevice:1']
 
-SNAME = WANIP_CONNECTION
+#SNAME = WANPPP_CONNECTION
+#SNAME = WANIP_CONNECTION
+SNAME = WANIP_CONNECTION2
 
 async def f():
     service = None
-    resp = await pyupnp_async.msearch_first(search_target=DEVICE)
-    print('device', resp.src_ip, resp.src_port)
-    print(resp.server, resp.st)
-    print(resp.location)
+    for dev in SUPPORTED_DEVICES:
+        resp = await pyupnp_async.msearch_first(search_target=dev)
+        if resp:
+            print("Successfully detected {}".format(dev))
+            print('device', resp.src_ip, resp.src_port)
+            print(resp.server, resp.st)
+            print(resp.location)
+            break
+    if not resp:
+        return
+
     device = await resp.get_device()
-    service = device.find_first_service(SNAME)
+    pprint(device.__dict__)
+
+    for _service in device.services:
+        if _service['serviceType'] == WANIP_CONNECTION:
+            service = device.find_first_service(WANIP_CONNECTION)
+        if _service['serviceType'] == WANIP_CONNECTION2:
+            service = device.find_first_service(WANIP_CONNECTION2)
+
     pprint(service)
     pprint(service.url)
 
