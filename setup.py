@@ -5,7 +5,7 @@ with open("README.rst") as readme_file:
 
 setup(
     name="pyupnp-async",
-    version='0.1.0.2',
+    version='0.1.1.0',
     description="Python Library for UPnP operations using asyncio",
     author="Xin Huang",
     author_email="xinhuang.abc@gmail.com",
