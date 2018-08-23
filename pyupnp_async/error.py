@@ -11,3 +11,11 @@ class UpnpSoapError(Exception):
 
     def __str__(self):
         return self.xml
+
+class UpnpKeyError(Exception):
+    def __init__(self, xmlstr, key):
+        self.xml = xmlstr
+        self.keyError = key
+
+    def __str__(self):
+        return "{} missing in {}".format(self.keyError, self.xml)
