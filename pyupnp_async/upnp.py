@@ -23,7 +23,7 @@ class MSResponse(object):
         self.src_port = addr[1]
         logger.debug("MSResponse msg: %s", msg)
 
-        data = dict([(k.upper(), v) for (k,v) in re.findall(r'(?P<name>.*?): (?P<value>.*?)\r\n', msg)])
+        data = dict([(k.upper(), v.lstrip()) for (k,v) in re.findall(r'(?P<name>.*?):(?P<value>.*?)\r\n', msg)])
 
         self.st = data['ST']
         self.usn = data['USN']
