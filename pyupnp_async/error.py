@@ -1,7 +1,9 @@
 import xmltodict
 
+class UpnpError(Exception):
+    pass
 
-class UpnpSoapError(Exception):
+class UpnpSoapError(UpnpError):
     def __init__(self, xmlstr):
         self.xml = xmlstr
         self.data = xmltodict.parse(xmlstr)
@@ -12,7 +14,7 @@ class UpnpSoapError(Exception):
     def __str__(self):
         return self.xml
 
-class UpnpKeyError(Exception):
+class UpnpKeyError(UpnpError):
     def __init__(self, xmlstr, key):
         self.xml = xmlstr
         self.keyError = key
