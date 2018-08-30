@@ -10,6 +10,12 @@ possible, but manual construction of request parameters is needed. (I.E. the SOU
 Installation
 ============
 
+To install via PYPI:
+
+::
+
+  pip install pyupnp-async
+
 To install the latest development version, run:
 
 ::
@@ -17,8 +23,6 @@ To install the latest development version, run:
   git clone https://github.com/xinhuang/pyupnp-async.git
   cd pyupnp-async
   python setup.py install
-
-*This package is not on pypi.*
 
 Quick Tutorial
 ==============
