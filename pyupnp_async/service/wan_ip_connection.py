@@ -5,12 +5,19 @@ from ..const import LIBRARY_NAME
 import xmltodict
 
 
+NAMESPACES = {
+    'http://schemas.xmlsoap.org/soap/envelope/': 's',
+    'urn:schemas-upnp-org:service:WANIPConnection:1': 'u',
+    'urn:schemas-upnp-org:service:WANIPConnection:2': 'u',
+}
+
+
 @service('urn:schemas-upnp-org:service:WANIPConnection:1')
 @service('urn:schemas-upnp-org:service:WANIPConnection:2')
 class WANIPConnectionService(BaseService):
     async def get_external_ip_address(self):
         xml = await self.request('GetExternalIPAddress')
-        data = xmltodict.parse(xml)
+        data = xmltodict.parse(xml, process_namespaces=True, namespaces=NAMESPACES)
         return data['s:Envelope']['s:Body']['u:GetExternalIPAddressResponse']['NewExternalIPAddress']
 
     async def add_port_mapping(self, int_port, ext_port, local_ip, protocol,
