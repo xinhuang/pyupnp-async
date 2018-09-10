@@ -6,11 +6,17 @@ from ..error import UpnpKeyError
 import xmltodict
 
 
+NAMESPACES = {
+    'http://schemas.xmlsoap.org/soap/envelope/': 's',
+    'urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1': 'u',
+}
+
+
 @service('urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1')
 class WANCommonInterfaceConfig(BaseService):
     async def get_total_bytes_sent(self):
         xml = await self.request('GetTotalBytesSent')
-        data = xmltodict.parse(xml)
+        data = xmltodict.parse(xml, process_namespaces=True, namespaces=NAMESPACES)
         try:
             return data['s:Envelope']['s:Body']['u:GetTotalBytesSentResponse']['NewTotalBytesSent']
         except KeyError as e:
@@ -18,7 +24,7 @@ class WANCommonInterfaceConfig(BaseService):
 
     async def get_total_bytes_received(self):
         xml = await self.request('GetTotalBytesReceived')
-        data = xmltodict.parse(xml)
+        data = xmltodict.parse(xml, process_namespaces=True, namespaces=NAMESPACES)
         try:
             return data['s:Envelope']['s:Body']['u:GetTotalBytesReceivedResponse']['NewTotalBytesReceived']
         except KeyError as e:
@@ -26,7 +32,7 @@ class WANCommonInterfaceConfig(BaseService):
 
     async def get_total_packets_sent(self):
         xml = await self.request('GetTotalPacketsSent')
-        data = xmltodict.parse(xml)
+        data = xmltodict.parse(xml, process_namespaces=True, namespaces=NAMESPACES)
         try:
             return data['s:Envelope']['s:Body']['u:GetTotalPacketsSentResponse']['NewTotalPacketsSent']
         except KeyError as e:
@@ -34,7 +40,7 @@ class WANCommonInterfaceConfig(BaseService):
 
     async def get_total_packets_received(self):
         xml = await self.request('GetTotalPacketsReceived')
-        data = xmltodict.parse(xml)
+        data = xmltodict.parse(xml, process_namespaces=True, namespaces=NAMESPACES)
         try:
             return data['s:Envelope']['s:Body']['u:GetTotalPacketsReceivedResponse']['NewTotalPacketsReceived']
         except KeyError as e:
